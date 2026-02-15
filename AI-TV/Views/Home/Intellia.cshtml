@@ -1,0 +1,187 @@
+﻿<style>
+    .hidden {
+        display: none;
+    }
+    .prompt{
+    
+        width: 1000px; 
+        padding: 12px 16px;
+        border-radius: 50px;
+        border: 1px solid #ccc;
+    
+    }
+
+    .btn-ai {
+        background-color: #4CAF50; 
+        color: white; 
+        padding: 12px 24px; 
+        border: none; 
+        border-radius: 25px; 
+        font-size: 16px; 
+        font-weight: 500; 
+        cursor: pointer; 
+        transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+    }
+
+        .btn-ai:hover {
+            background-color: #45a049; 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 10px rgba(0,0,0,0.15);
+        }
+
+        .btn-ai:active {
+            background-color: #3e8e41; 
+            transform: translateY(0);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn-ai:disabled {
+            background-color: #a5d6a7; 
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+    .robot{
+        width:1100px;
+        height:300px;
+        margin-bottom:80px;
+    }
+    .container {
+        position:center;
+    }
+
+    .bg_body {
+        background: linear-gradient(135deg, #87CEEB, #e5e7eb);
+        min-height: 100vh;
+    }
+</style>
+
+<script src="https://js.puter.com/v2/"></script>
+
+@using GenerativeAI;
+
+@{
+    string valeur = ViewBag.Valeur;
+}
+<script src="https://js.puter.com/v2/"></script>
+
+@if (valeur != null)
+{
+    var apiKey = "AIzaSyB5AENRbpo-g0PaJ-X4BupSjHXbeRwI_Qs";
+
+   @*  var googleAi = new GoogleAi(apiKey);
+    var model = googleAi.CreateGenerativeModel("gemini-3-flash-preview");
+    var response = await model.GenerateContentAsync(@valeur); *@
+@*     var lines = response.Text.Split('\n');
+ *@
+@*     var answer = response.Text?.Split('\n');
+ *@   
+@*     <p>Valeur saisie : @answer</p>
+ *@
+ 
+    var googleAi = new GoogleAi(apiKey);
+    var model = googleAi.CreateGenerativeModel("gemini-3-flash-preview");
+    var response = await model.GenerateContentAsync(valeur);
+
+    var answer = response?.Text?
+        .Split('#', StringSplitOptions.RemoveEmptyEntries);
+}
+@model string[]
+
+@if (Model != null)
+{
+    foreach (var l in Model)
+    {
+        <p>@l</p>
+    }
+}
+
+<script>
+    function searchAnswer() {
+      document.getElementById("myDiv").classList.remove("hidden");
+      document.getElementById("prompt").value;
+
+    }
+</script>
+<body class="bg_body">
+    <div class="container">
+  <img src="~/images/robot.png" class="robot" />
+
+    <form method="post">
+        <input type="text" class="prompt"  id="monInput"  />
+            <button type="button" id="btnEnvoyer" class="btn-ai">Envoyer</button>
+        <div id="status" style="margin-top:10px;"></div>
+        <div id="resultat" style="margin-top:15px;"></div>
+
+    </form>
+   @*  @if (Model.response != null && Model.response != null)
+    {
+        var lines = Model.model.GeneratedContent.Split('\n');
+
+        foreach (var line in lines)
+        {
+            <p>@line</p>
+        }
+    }
+    else
+    {
+        <p>Aucun contenu généré.</p>
+    } *@
+    @* 
+    <button onclick="searchAnswer()">Clique ici</button>
+    <div id="myDiv" class="hidden">
+        <p>réponse : @answer</p>
+    </div> *@
+ 
+
+    
+</div>
+</body>
+
+<script>
+            document.addEventListener("click", function (e) {
+        if (e.target && e.target.id === "btnEnvoyer") {
+
+            var message = document.getElementById("monInput").value;
+            var statusDiv = document.getElementById("status");
+            var resultDiv = document.getElementById("resultat");
+
+            statusDiv.innerHTML = "Please wait...";
+            resultDiv.innerHTML = "";
+
+            puter.ai.chat(message, { model: 'gemini-3-flash-preview' })
+                .then(response => {
+
+                    var text = response.message.content;
+
+                    statusDiv.innerHTML = "";
+                    resultDiv.innerHTML = text.replace(/\n/g, "<br>"); // affiche dans div
+
+                })
+                .catch(error => {
+                    statusDiv.innerHTML = "Erreur !";
+                    console.error(error);
+                });
+
+        }
+    });
+</script>
+@* <script>
+    function envoyer() {
+                alert ("text");
+
+    var message = document.getElementById("monInput").value;
+    puter.ai.chat(message, {
+        model: 'gemini-3-flash-preview'
+    }).then(response => {
+        // puter.print('hello Amira' +response);
+    var text = response.message.content;
+            puter.print(text);           //  const lines = text.split("1");
+
+
+    // lines.forEach(line => {
+    //     puter.print(text);
+    // });
+    // });
+    }
+</script> *@
